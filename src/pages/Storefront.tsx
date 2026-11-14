@@ -6,6 +6,8 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
   const { state, addOrder, addInvoice } = useStore();
   const { products, settings } = state;
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
@@ -19,6 +21,13 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
       return [...prev, { productId, qty: 1 }];
     });
   };
+
+  const categories = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
+  const filteredProducts = products.filter((p) => {
+    const matchSearch = !search || p.name.includes(search) || p.category.includes(search);
+    const matchCat = category === 'all' || p.category === category;
+    return matchSearch && matchCat;
+  });
 
   const total = cart.reduce((s, c) => {
     const p = products.find((x) => x.id === c.productId);
@@ -93,11 +102,21 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
         )}
       </div>
 
+      <div className="store-filters">
+        <input className="search-input" placeholder="بحث عن منتج..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="all">كل الفئات</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="product-grid">
-        {products.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <p className="empty">لا توجد منتجات متاحة</p>
         ) : (
-          products.map((p) => (
+          filteredProducts.map((p) => (
             <div className="product-card" key={p.id}>
               <div className="product-emoji">{p.name.charAt(0)}</div>
               <h3>{p.name}</h3>

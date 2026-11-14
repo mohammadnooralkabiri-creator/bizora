@@ -18,8 +18,8 @@ const ROLE_OPTIONS: Role[] = ['viewer', 'finance', 'warehouse', 'orders', 'cashi
 export default function Accounts() {
   const { state, addAccount, updateAccount, deleteAccount } = useStore();
   const { accounts, user } = state;
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [role, setRole] = useState<Role>('viewer');
   const [editing, setEditing] = useState<string | null>(null);
   const [editRole, setEditRole] = useState<Role>('viewer');
@@ -28,14 +28,14 @@ export default function Accounts() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password.trim()) return;
+    if (!email.trim()) return;
     if (editing) {
       updateAccount(editing, { role: editRole });
       setEditing(null);
     } else {
-      addAccount({ username: username.trim(), password, role });
-      setUsername('');
-      setPassword('');
+      addAccount({ username: name.trim() || email.trim(), email: email.trim(), password: '', role });
+      setEmail('');
+      setName('');
       setRole('viewer');
     }
   };
@@ -64,10 +64,10 @@ export default function Accounts() {
           <form onSubmit={submit} className="form">
             {!editing && (
               <>
-                <label>اسم المستخدم</label>
-                <input value={username} onChange={(e) => setUsername(e.target.value)} required />
-                <label>كلمة المرور</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <label>البريد الإلكتروني</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <label>اسم العرض (اختياري)</label>
+                <input value={name} onChange={(e) => setName(e.target.value)} />
               </>
             )}
             <label>الصلاحية</label>
@@ -94,7 +94,7 @@ export default function Accounts() {
             <tbody>
               {accounts.map((a) => (
                 <tr key={a.id}>
-                  <td>{a.username} {a.id === user?.id && '(أنت)'}</td>
+                  <td>{a.email} {a.id === user?.id && '(أنت)'}</td>
                   <td>{ROLE_LABELS[a.role] || a.role}</td>
                   <td className="actions-cell">
                     {isOwner && a.role !== 'owner' && (

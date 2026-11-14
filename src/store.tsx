@@ -19,7 +19,7 @@ const defaultSettings: Settings = {
 };
 
 const defaultAccounts: User[] = [
-  { id: 'owner-admin', username: 'admin', password: 'admin', role: 'owner' },
+  { id: 'owner-admin', username: 'admin', email: 'admin@bizora.com', password: 'admin', role: 'owner', createdAt: Date.now() },
 ];
 
 const initialState: AppState = {
@@ -42,10 +42,15 @@ function loadState(): AppState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return initialState;
     const parsed = JSON.parse(raw) as AppState;
-    const accounts = parsed.accounts && parsed.accounts.length ? parsed.accounts : defaultAccounts;
+    const accounts = (parsed.accounts && parsed.accounts.length ? parsed.accounts : defaultAccounts).map((a) => ({
+      ...a,
+      email: a.email || `${a.username}@bizora.com`,
+      createdAt: a.createdAt || Date.now(),
+    }));
     let user = parsed.user;
-    if (user && !user.role) {
-      user = { ...user, id: user.id || uid(), role: 'owner' };
+    if (user) {
+      if (!user.role) user = { ...user, id: user.id || uid(), role: 'owner' };
+      if (!user.email) user = { ...user, email: `${user.username}@bizora.com` };
     }
     const settings = { ...defaultSettings, ...parsed.settings };
     if (settings.businessName === 'BIZORA') settings.businessName = 'bizora';
@@ -70,6 +75,7 @@ function uid(): string {
 interface StoreContextValue {
   state: AppState;
   login: (username: string, password: string) => boolean;
+  loginByEmail: (email: string) => boolean;
   register: (username: string, password: string) => boolean;
   logout: () => void;
   addProduct: (p: Omit<Product, 'id' | 'createdAt'>) => Product;
@@ -127,8 +133,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     return false;
   }, []);
 
+  const loginByEmail = useCallback((email: string) => {
+    const accounts = loadState().accounts || defaultAccounts;
+    const found = accounts.find((a) => a.email === email || a.username === email);
+    if (found) {
+      setState((prev) => ({ ...prev, user: found, accounts }));
+      return true;
+    }
+    return false;
+  }, []);
+
   const register = useCallback((username: string, password: string) => {
-    const u: User = { id: uid(), username, password, role: 'employee' };
+    const u: User = { id: uid(), username, email: username.includes('@') ? username : `${username}@bizora.com`, password, role: 'employee', createdAt: Date.now() };
     setState((prev) => ({ ...prev, user: u, accounts: [u, ...prev.accounts] }));
     const s = loadState();
     saveState({ ...s, user: u, accounts: [u, ...(s.accounts || [])] });
@@ -285,7 +301,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [log]);
 
   const addAccount = useCallback((a: Omit<User, 'id'>) => {
-    const acc: User = { ...a, id: uid() };
+    const acc: User = { ...a, id: uid(), email: a.email || `${a.username}@bizora.com`, createdAt: Date.now() };
     setState((prev) => ({ ...prev, accounts: [acc, ...prev.accounts] }));
     log('create', 'account', `أُضيف حساب: ${acc.username} (${acc.role})`);
     return acc;
@@ -383,6 +399,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const value: StoreContextValue = {
     state,
     login,
+    loginByEmail,
     register,
     logout,
     addProduct,

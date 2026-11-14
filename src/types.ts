@@ -120,8 +120,10 @@ export type Role =
 export interface User {
   id: string;
   username: string;
+  email: string;
   password: string;
   role: Role;
+  createdAt?: number;
 }
 
 export interface AppState {

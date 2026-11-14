@@ -6,27 +6,40 @@ interface LoginProps {
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const { login, register } = useStore();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { state, loginByEmail } = useStore();
+  const { accounts } = state;
+  const [step, setStep] = useState<'email' | 'code'>('email');
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [sentCode, setSentCode] = useState('');
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
 
-  const submit = (e: React.FormEvent) => {
+  const sendCode = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!username.trim() || !password.trim()) {
-      setError('يرجى إدخال اسم المستخدم وكلمة المرور');
+    setInfo('');
+    const acc = accounts.find((a) => a.email === email.trim() || a.username === email.trim());
+    if (!acc) {
+      setError('لا يوجد حساب بهذا البريد');
       return;
     }
-    if (mode === 'login') {
-      const ok = login(username.trim(), password);
-      if (ok) onLogin();
-      else setError('بيانات الدخول غير صحيحة (جرب admin / admin)');
-    } else {
-      register(username.trim(), password);
-      onLogin();
+    const c = Math.floor(100000 + Math.random() * 900000).toString();
+    setSentCode(c);
+    setStep('code');
+    setInfo(`تم إرسال كود التحقق إلى ${email} (تجريبي: ${c})`);
+  };
+
+  const verify = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (code.trim() !== sentCode) {
+      setError('كود التحقق غير صحيح');
+      return;
     }
+    const ok = loginByEmail(email.trim());
+    if (ok) onLogin();
+    else setError('فشل تسجيل الدخول');
   };
 
   return (
@@ -34,29 +47,30 @@ export default function Login({ onLogin }: LoginProps) {
       <div className="login-card">
         <div className="login-brand">
           <div className="brand-icon">B</div>
-          <h1>BIZORA</h1>
+          <h1>bizora</h1>
           <p>منصة إدارة المشاريع الصغيرة</p>
         </div>
-        <form onSubmit={submit} className="login-form">
-          <h2>{mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب'}</h2>
-          <label>اسم المستخدم</label>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" />
-          <label>كلمة المرور</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" />
+        <form onSubmit={step === 'email' ? sendCode : verify} className="login-form">
+          <h2>{step === 'email' ? 'تسجيل الدخول بالبريد' : 'أدخل كود التحقق'}</h2>
+          {step === 'email' ? (
+            <>
+              <label>البريد الإلكتروني</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@bizora.com" required />
+            </>
+          ) : (
+            <>
+              <label>كود التحقق (6 أرقام)</label>
+              <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="123456" required />
+              <button type="button" className="login-switch" onClick={() => setStep('email')}>تغيير البريد</button>
+            </>
+          )}
           {error && <div className="login-error">{error}</div>}
+          {info && <div className="login-hint">{info}</div>}
           <button type="submit" className="login-btn">
-            {mode === 'login' ? 'دخول' : 'تسجيل'}
-          </button>
-          <button type="button" className="login-switch" onClick={() => setMode(mode === 'login' ? 'register' : 'login')}>
-            {mode === 'login' ? 'ليس لديك حساب؟ سجّل الآن' : 'لديك حساب؟ سجّل دخول'}
+            {step === 'email' ? 'إرسال الكود' : 'تحقق ودخول'}
           </button>
         </form>
-        <div className="login-whatsapp">
-          <a href="https://chat.whatsapp.com/" target="_blank" rel="noreferrer" className="wa-link">
-            💬 دخول قروب الواتساب
-          </a>
-        </div>
-        <p className="login-hint">الدخول الافتراضي: admin / admin</p>
+        <p className="login-hint">الدخول الافتراضي: admin@bizora.com (كود يُرسل عند الطلب)</p>
       </div>
     </div>
   );
