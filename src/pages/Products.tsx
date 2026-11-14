@@ -6,11 +6,16 @@ import type { Product } from '../types';
 export default function Products() {
   const { state, addProduct, updateProduct, deleteProduct } = useStore();
   const { products, settings } = state;
+  const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState({ name: '', category: '', price: 0, cost: 0, quantity: 0, minStock: 10 });
 
   const reset = () => { setForm({ name: '', category: '', price: 0, cost: 0, quantity: 0, minStock: 10 }); setEditing(null); };
+
+  const filtered = products.filter((p) =>
+    !search || p.name.includes(search) || p.category.includes(search)
+  );
 
   const openEdit = (p: Product) => {
     setEditing(p.id);
@@ -71,7 +76,8 @@ export default function Products() {
       </div>
 
       <div className="card">
-        {products.length === 0 ? (
+        <input className="search-input" placeholder="بحث..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ marginBottom: 12 }} />
+        {filtered.length === 0 ? (
           <p className="empty">لا توجد منتجات</p>
         ) : (
           <table className="table">
@@ -87,7 +93,7 @@ export default function Products() {
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => (
+              {filtered.map((p) => (
                 <tr key={p.id} className={p.quantity <= settings.lowStockThreshold ? 'low-stock-row' : ''}>
                   <td>{p.name}</td>
                   <td>{p.category}</td>

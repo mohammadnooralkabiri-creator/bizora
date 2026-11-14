@@ -6,6 +6,7 @@ import type { Order, OrderStatus } from '../types';
 export default function Orders() {
   const { state, addOrder, updateOrderStatus, deleteOrder, addInvoice } = useStore();
   const { products, orders, settings } = state;
+  const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
@@ -30,6 +31,10 @@ export default function Orders() {
     addOrder({ customerName, phone, items: orderItems, status: 'pending', notes });
     setCustomerName(''); setPhone(''); setNotes(''); setItems([]); setOpen(false);
   };
+
+  const filteredOrders = orders.filter((o) =>
+    !search || o.customerName.includes(search) || o.phone.includes(search) || o.status.includes(search)
+  );
 
   const totalForItems = items.reduce((s, it) => {
     const p = products.find((x) => x.id === it.productId);
@@ -58,7 +63,8 @@ export default function Orders() {
       </div>
 
       <div className="card">
-        {orders.length === 0 ? (
+        <input className="search-input" placeholder="بحث..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ marginBottom: 12 }} />
+        {filteredOrders.length === 0 ? (
           <p className="empty">لا توجد طلبات</p>
         ) : (
           <table className="table">
@@ -74,7 +80,7 @@ export default function Orders() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((o) => (
+              {filteredOrders.map((o) => (
                 <tr key={o.id}>
                   <td>{o.id.slice(0, 6)}</td>
                   <td>{o.customerName}</td>
