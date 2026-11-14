@@ -91,6 +91,16 @@ export interface Employee {
   createdAt: number;
 }
 
+export interface StockMovement {
+  id: string;
+  productId: string;
+  productName: string;
+  type: 'in' | 'out' | 'transfer' | 'adjustment';
+  qty: number;
+  reason: string;
+  createdAt: number;
+}
+
 export interface User {
   username: string;
   password: string;
@@ -107,4 +117,5 @@ export interface AppState {
   settings: Settings;
   warehouses: Warehouse[];
   employees: Employee[];
+  stockMovements: StockMovement[];
 }

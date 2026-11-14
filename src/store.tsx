@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus, Warehouse, Employee } from './types';
+import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus, Warehouse, Employee, StockMovement } from './types';
 
 const STORAGE_KEY = 'bizora_state_v1';
 
@@ -23,6 +23,7 @@ const initialState: AppState = {
   settings: defaultSettings,
   warehouses: [],
   employees: [],
+  stockMovements: [],
 };
 
 function loadState(): AppState {
@@ -70,6 +71,7 @@ interface StoreContextValue {
   deleteWarehouse: (id: string) => void;
   addEmployee: (e: Omit<Employee, 'id' | 'createdAt'>) => Employee;
   deleteEmployee: (id: string) => void;
+  addStockMovement: (m: Omit<StockMovement, 'id' | 'createdAt' | 'productName'>) => StockMovement;
   log: (action: string, entity: string, details: string) => void;
   clearAll: () => void;
   seedDemo: () => void;
@@ -294,6 +296,24 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     log('delete', 'employee', `تم حذف الموظف ${id}`);
   }, [log]);
 
+  const addStockMovement = useCallback((m: Omit<StockMovement, 'id' | 'createdAt' | 'productName'>) => {
+    const prod = loadState().products.find((p) => p.id === m.productId);
+    const name = prod?.name || m.productId;
+    const mv: StockMovement = { ...m, id: uid(), productName: name, createdAt: Date.now() };
+    setState((prev) => {
+      const products = prev.products.map((p) => {
+        if (p.id !== m.productId) return p;
+        if (m.type === 'in') return { ...p, quantity: p.quantity + m.qty };
+        if (m.type === 'out') return { ...p, quantity: Math.max(0, p.quantity - m.qty) };
+        if (m.type === 'adjustment') return { ...p, quantity: m.qty };
+        return p;
+      });
+      return { ...prev, products, stockMovements: [mv, ...prev.stockMovements] };
+    });
+    log('stock', 'movement', `${m.type} ${m.qty} - ${name}`);
+    return mv;
+  }, [log]);
+
   const clearAll = useCallback(() => {
     setState(initialState);
     localStorage.removeItem(STORAGE_KEY);
@@ -345,6 +365,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     deleteWarehouse,
     addEmployee,
     deleteEmployee,
+    addStockMovement,
     log,
     clearAll,
     seedDemo,
