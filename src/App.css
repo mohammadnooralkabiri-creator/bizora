@@ -841,6 +841,16 @@ footer {
   .two-col { grid-template-columns: 1fr; }
 }
 
+.storefront { min-height: 100vh; background: #F8FAFC; color: #0F172A; padding: 20px; }
+.store-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.store-header .brand { display: flex; align-items: center; gap: 10px; }
+.store-header .brand h1 { font-size: 22px; margin: 0; }
+.store-actions { display: flex; gap: 8px; align-items: center; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.product-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.product-card h3 { margin: 0; font-size: 16px; }
+.product-card strong { font-size: 18px; color: #2563EB; }
+
 @media (max-width: 700px) {
   .sidebar { width: 65px; padding: 20px 8px; }
   .brand { justify-content: center; padding: 0 0 25px; }

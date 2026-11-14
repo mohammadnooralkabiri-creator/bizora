@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStore } from './store';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
+import Storefront from './pages/Storefront';
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Products from './pages/Products';
@@ -61,12 +62,19 @@ const ROLE_PAGES: Record<string, string[]> = {
 function App() {
   const { state, logout } = useStore();
   const [active, setActive] = useState('dashboard');
+  const [showLogin, setShowLogin] = useState(false);
 
-  if (!state.user) {
-    return <Login onLogin={() => setActive('dashboard')} />;
+  if (!state.user && !showLogin) {
+    return <Storefront onAdminLogin={() => setShowLogin(true)} />;
   }
 
-  const role = state.user.role || 'employee';
+  if (!state.user) {
+    return <Login onLogin={() => { setShowLogin(false); setActive('dashboard'); }} />;
+  }
+
+  const user = state.user;
+
+  const role = user.role || 'employee';
   const allowed = ROLE_PAGES[role] || ['dashboard'];
   const safeActive = allowed.includes(active) ? active : 'dashboard';
 
@@ -82,7 +90,7 @@ function App() {
         orderCount={pendingOrders}
         lowStockCount={lowStockCount}
         onLogout={logout}
-        user={state.user.username}
+        user={user.username}
         role={role}
       />
       <main className="main">
@@ -90,7 +98,7 @@ function App() {
           <div className="breadcrumb">مساحة العمل <span>/</span> {activeLabel(safeActive)}</div>
           <div className="top-actions">
             {lowStockCount > 0 && <span className="top-alert">⚠ {lowStockCount}</span>}
-            <div className="top-avatar">{state.user.username.charAt(0).toUpperCase()}</div>
+            <div className="top-avatar">{user.username.charAt(0).toUpperCase()}</div>
           </div>
         </header>
         <section className="content">
