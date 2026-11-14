@@ -9,7 +9,7 @@ const defaultSettings: Settings = {
   lowStockThreshold: 10,
   whatsappGroupLink: 'https://chat.whatsapp.com/your-group-link',
   currency: 'AED',
-  businessName: 'BIZORA',
+  businessName: 'bizora',
   phone: '',
   email: '',
   instagram: '',
@@ -47,7 +47,9 @@ function loadState(): AppState {
     if (user && !user.role) {
       user = { ...user, id: user.id || uid(), role: 'owner' };
     }
-    return { ...initialState, ...parsed, accounts, user, settings: { ...defaultSettings, ...parsed.settings } };
+    const settings = { ...defaultSettings, ...parsed.settings };
+    if (settings.businessName === 'BIZORA') settings.businessName = 'bizora';
+    return { ...initialState, ...parsed, accounts, user, settings };
   } catch {
     return initialState;
   }
