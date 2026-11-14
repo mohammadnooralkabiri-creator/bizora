@@ -19,6 +19,7 @@ const navItems = [
   { key: 'audit', label: 'السجل', icon: '☰' },
   { key: 'whatsapp', label: 'واتساب', icon: 'W' },
   { key: 'settings', label: 'الإعدادات', icon: '⚙' },
+  { key: 'accounts', label: 'الحسابات', icon: '☰' },
 ];
 
 interface SidebarProps {
@@ -28,9 +29,21 @@ interface SidebarProps {
   lowStockCount: number;
   onLogout: () => void;
   user: string;
+  role?: string;
 }
 
-export default function Sidebar({ active, setActive, orderCount, lowStockCount, onLogout, user }: SidebarProps) {
+const ROLE_PAGES: Record<string, string[]> = {
+  owner: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
+  admin: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
+  viewer: ['dashboard','reports','notifications','audit'],
+  finance: ['dashboard','finance','profits','withdrawals','expenses','invoices','reports','notifications','audit'],
+  warehouse: ['dashboard','products','inventory','warehouses','reports','notifications'],
+  orders: ['dashboard','orders','pos','invoices','reports','notifications'],
+  cashier: ['dashboard','pos','orders','invoices'],
+  employee: ['dashboard','orders','products','inventory','reports','notifications'],
+};
+
+export default function Sidebar({ active, setActive, orderCount, lowStockCount, onLogout, user, role = 'employee' }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -49,7 +62,7 @@ export default function Sidebar({ active, setActive, orderCount, lowStockCount, 
 
       <p className="side-label">القائمة الرئيسية</p>
       <nav>
-        {navItems.map((item) => (
+        {navItems.filter((item) => (ROLE_PAGES[role] || ['dashboard']).includes(item.key)).map((item) => (
           <button
             key={item.key}
             className={`nav-item ${active === item.key ? 'selected' : ''}`}

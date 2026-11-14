@@ -101,13 +101,26 @@ export interface StockMovement {
   createdAt: number;
 }
 
+export type Role =
+  | 'owner'
+  | 'admin'
+  | 'viewer'
+  | 'finance'
+  | 'warehouse'
+  | 'orders'
+  | 'cashier'
+  | 'employee';
+
 export interface User {
+  id: string;
   username: string;
   password: string;
+  role: Role;
 }
 
 export interface AppState {
   user: User | null;
+  accounts: User[];
   products: Product[];
   orders: Order[];
   invoices: Invoice[];

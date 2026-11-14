@@ -12,6 +12,7 @@ import Reports from './pages/Reports';
 import AuditLog from './pages/AuditLog';
 import WhatsApp from './pages/WhatsApp';
 import Settings from './pages/Settings';
+import Accounts from './pages/Accounts';
 import POS from './pages/POS';
 import Finance from './pages/Finance';
 import Withdrawals from './pages/Withdrawals';
@@ -34,6 +35,7 @@ const pages: Record<string, React.ComponentType> = {
   audit: AuditLog,
   whatsapp: WhatsApp,
   settings: Settings,
+  accounts: Accounts,
   pos: POS,
   finance: Finance,
   withdrawals: Withdrawals,
@@ -45,6 +47,17 @@ const pages: Record<string, React.ComponentType> = {
   stores: Stores,
 };
 
+const ROLE_PAGES: Record<string, string[]> = {
+  owner: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
+  admin: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
+  viewer: ['dashboard','reports','notifications','audit'],
+  finance: ['dashboard','finance','profits','withdrawals','expenses','invoices','reports','notifications','audit'],
+  warehouse: ['dashboard','products','inventory','warehouses','reports','notifications'],
+  orders: ['dashboard','orders','pos','invoices','reports','notifications'],
+  cashier: ['dashboard','pos','orders','invoices'],
+  employee: ['dashboard','orders','products','inventory','reports','notifications'],
+};
+
 function App() {
   const { state, logout } = useStore();
   const [active, setActive] = useState('dashboard');
@@ -53,23 +66,28 @@ function App() {
     return <Login onLogin={() => setActive('dashboard')} />;
   }
 
-  const Page = pages[active] || Dashboard;
+  const role = state.user.role || 'employee';
+  const allowed = ROLE_PAGES[role] || ['dashboard'];
+  const safeActive = allowed.includes(active) ? active : 'dashboard';
+
+  const Page = pages[safeActive] || Dashboard;
   const pendingOrders = state.orders.filter((o) => o.status === 'pending').length;
   const lowStockCount = state.products.filter((p) => p.quantity <= state.settings.lowStockThreshold).length;
 
   return (
     <div className="app" dir="rtl">
       <Sidebar
-        active={active}
+        active={safeActive}
         setActive={setActive}
         orderCount={pendingOrders}
         lowStockCount={lowStockCount}
         onLogout={logout}
         user={state.user.username}
+        role={role}
       />
       <main className="main">
         <header className="topbar">
-          <div className="breadcrumb">مساحة العمل <span>/</span> {activeLabel(active)}</div>
+          <div className="breadcrumb">مساحة العمل <span>/</span> {activeLabel(safeActive)}</div>
           <div className="top-actions">
             {lowStockCount > 0 && <span className="top-alert">⚠ {lowStockCount}</span>}
             <div className="top-avatar">{state.user.username.charAt(0).toUpperCase()}</div>
@@ -96,6 +114,7 @@ function activeLabel(k: string) {
     audit: 'السجل',
     whatsapp: 'واتساب',
     settings: 'الإعدادات',
+    accounts: 'الحسابات',
     pos: 'نقطة البيع',
     finance: 'المالية',
     withdrawals: 'السحوبات',

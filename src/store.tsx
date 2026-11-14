@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus, Warehouse, Employee, StockMovement } from './types';
+import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus, Warehouse, Employee, StockMovement, User } from './types';
 
 const STORAGE_KEY = 'bizora_state_v1';
 
@@ -12,8 +12,13 @@ const defaultSettings: Settings = {
   businessName: 'BIZORA',
 };
 
+const defaultAccounts: User[] = [
+  { id: 'owner-admin', username: 'admin', password: 'admin', role: 'owner' },
+];
+
 const initialState: AppState = {
   user: null,
+  accounts: defaultAccounts,
   products: [],
   orders: [],
   invoices: [],
@@ -31,7 +36,12 @@ function loadState(): AppState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return initialState;
     const parsed = JSON.parse(raw) as AppState;
-    return { ...initialState, ...parsed, settings: { ...defaultSettings, ...parsed.settings } };
+    const accounts = parsed.accounts && parsed.accounts.length ? parsed.accounts : defaultAccounts;
+    let user = parsed.user;
+    if (user && !user.role) {
+      user = { ...user, id: user.id || uid(), role: 'owner' };
+    }
+    return { ...initialState, ...parsed, accounts, user, settings: { ...defaultSettings, ...parsed.settings } };
   } catch {
     return initialState;
   }
@@ -67,6 +77,9 @@ interface StoreContextValue {
   deleteTransaction: (id: string) => void;
   setBudget: (b: Budget) => void;
   updateSettings: (patch: Partial<Settings>) => void;
+  addAccount: (a: Omit<User, 'id'>) => User;
+  updateAccount: (id: string, patch: Partial<User>) => void;
+  deleteAccount: (id: string) => void;
   addWarehouse: (w: Omit<Warehouse, 'id' | 'createdAt'>) => Warehouse;
   deleteWarehouse: (id: string) => void;
   addEmployee: (e: Omit<Employee, 'id' | 'createdAt'>) => Employee;
@@ -97,29 +110,20 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback((username: string, password: string) => {
-    // stored user check
-    const stored = loadState().user;
-    if (stored && stored.username === username && stored.password === password) {
-      setState((prev) => ({ ...prev, user: stored }));
-      return true;
-    }
-    // allow default admin/admin
-    if (username === 'admin' && password === 'admin') {
-      const u = { username, password };
-      setState((prev) => ({ ...prev, user: u }));
-      // persist user
-      const s = loadState();
-      saveState({ ...s, user: u });
+    const accounts = loadState().accounts || defaultAccounts;
+    const found = accounts.find((a) => a.username === username && a.password === password);
+    if (found) {
+      setState((prev) => ({ ...prev, user: found, accounts }));
       return true;
     }
     return false;
   }, []);
 
   const register = useCallback((username: string, password: string) => {
-    const u = { username, password };
-    setState((prev) => ({ ...prev, user: u }));
+    const u: User = { id: uid(), username, password, role: 'employee' };
+    setState((prev) => ({ ...prev, user: u, accounts: [u, ...prev.accounts] }));
     const s = loadState();
-    saveState({ ...s, user: u });
+    saveState({ ...s, user: u, accounts: [u, ...(s.accounts || [])] });
     return true;
   }, []);
 
@@ -272,6 +276,31 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     log('update', 'settings', `تم تحديث الإعدادات`);
   }, [log]);
 
+  const addAccount = useCallback((a: Omit<User, 'id'>) => {
+    const acc: User = { ...a, id: uid() };
+    setState((prev) => ({ ...prev, accounts: [acc, ...prev.accounts] }));
+    log('create', 'account', `أُضيف حساب: ${acc.username} (${acc.role})`);
+    return acc;
+  }, [log]);
+
+  const updateAccount = useCallback((id: string, patch: Partial<User>) => {
+    setState((prev) => ({
+      ...prev,
+      accounts: prev.accounts.map((a) => (a.id === id ? { ...a, ...patch } : a)),
+      user: prev.user && prev.user.id === id ? { ...prev.user, ...patch } : prev.user,
+    }));
+    log('update', 'account', `تم تحديث الحساب ${id}`);
+  }, [log]);
+
+  const deleteAccount = useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      accounts: prev.accounts.filter((a) => a.id !== id),
+      user: prev.user && prev.user.id === id ? null : prev.user,
+    }));
+    log('delete', 'account', `تم حذف الحساب ${id}`);
+  }, [log]);
+
   const addWarehouse = useCallback((w: Omit<Warehouse, 'id' | 'createdAt'>) => {
     const wh: Warehouse = { ...w, id: uid(), createdAt: Date.now() };
     setState((prev) => ({ ...prev, warehouses: [wh, ...prev.warehouses] }));
@@ -361,6 +390,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     deleteTransaction,
     setBudget,
     updateSettings,
+    addAccount,
+    updateAccount,
+    deleteAccount,
     addWarehouse,
     deleteWarehouse,
     addEmployee,
