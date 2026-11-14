@@ -18,6 +18,31 @@ export default function Products() {
     setOpen(true);
   };
 
+  const importCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || '');
+      const lines = text.split(/\\r?\\n/).filter(Boolean);
+      lines.forEach((line, idx) => {
+        if (idx === 0 && /name/i.test(line)) return; // header
+        const cols = line.split(',').map((c) => c.trim());
+        if (cols.length < 2) return;
+        addProduct({
+          name: cols[0] || 'منتج',
+          category: cols[1] || '',
+          price: Number(cols[2]) || 0,
+          cost: Number(cols[3]) || 0,
+          quantity: Number(cols[4]) || 0,
+          minStock: Number(cols[5]) || 10,
+        });
+      });
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editing) {
@@ -36,7 +61,13 @@ export default function Products() {
           <h1>المنتجات</h1>
           <p>إدارة منتجاتك وأسعارك</p>
         </div>
-        <button className="primary-btn" onClick={() => { reset(); setOpen(true); }}>+ منتج جديد</button>
+        <div className="header-actions">
+          <label className="secondary-btn" style={{ cursor: 'pointer' }}>
+            استيراد CSV
+            <input type="file" accept=".csv" onChange={importCSV} style={{ display: 'none' }} />
+          </label>
+          <button className="primary-btn" onClick={() => { reset(); setOpen(true); }}>+ منتج جديد</button>
+        </div>
       </div>
 
       <div className="card">
