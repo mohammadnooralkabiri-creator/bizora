@@ -50,7 +50,7 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
 
   const submitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName.trim() || cart.length === 0) return;
+    if (!customerName.trim() || !phone.trim() || !address.trim() || cart.length === 0) return;
     const orderItems = cart.map((c) => {
       const p = products.find((x) => x.id === c.productId)!;
       return { productId: p.id, productName: p.name, qty: c.qty, price: p.price, cost: p.cost };
@@ -216,10 +216,10 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
             <div className="store-cart-total">المجموع: {total.toFixed(2)} {settings.currency}</div>
             <label>الاسم</label>
             <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
-            <label>رقم الهاتف (اختياري)</label>
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+971..." />
-            <label>العنوان (اختياري)</label>
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} />
+            <label>رقم الهاتف (إجباري)</label>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+971..." required />
+            <label>العنوان (إجباري)</label>
+            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} required />
             <button type="submit" className="primary-btn full">تأكيد الطلب</button>
           </form>
         )}
