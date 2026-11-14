@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus } from './types';
+import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus, Warehouse, Employee } from './types';
 
 const STORAGE_KEY = 'bizora_state_v1';
 
@@ -21,6 +21,8 @@ const initialState: AppState = {
   budget: { total: 0, spent: 0 },
   logs: [],
   settings: defaultSettings,
+  warehouses: [],
+  employees: [],
 };
 
 function loadState(): AppState {
@@ -64,6 +66,10 @@ interface StoreContextValue {
   deleteTransaction: (id: string) => void;
   setBudget: (b: Budget) => void;
   updateSettings: (patch: Partial<Settings>) => void;
+  addWarehouse: (w: Omit<Warehouse, 'id' | 'createdAt'>) => Warehouse;
+  deleteWarehouse: (id: string) => void;
+  addEmployee: (e: Omit<Employee, 'id' | 'createdAt'>) => Employee;
+  deleteEmployee: (id: string) => void;
   log: (action: string, entity: string, details: string) => void;
   clearAll: () => void;
   seedDemo: () => void;
@@ -156,7 +162,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         if (item) return { ...p, quantity: Math.max(0, p.quantity - item.qty) };
         return p;
       });
-      return { ...prev, orders: [order, ...prev.orders], products };
+      let transactions = prev.transactions;
+      if (order.status === 'delivered') {
+        transactions = [
+          { id: uid(), type: 'sale', amount: order.total, reason: `مبيعات طلب #${order.id.slice(0, 6)}`, createdAt: Date.now() },
+          ...transactions,
+        ];
+      }
+      return { ...prev, orders: [order, ...prev.orders], products, transactions };
     });
     log('create', 'order', `طلب جديد #${order.id.slice(0, 6)} - ${order.customerName} - ${total}`);
     // transaction for sale if delivered? keep pending
@@ -257,6 +270,30 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     log('update', 'settings', `تم تحديث الإعدادات`);
   }, [log]);
 
+  const addWarehouse = useCallback((w: Omit<Warehouse, 'id' | 'createdAt'>) => {
+    const wh: Warehouse = { ...w, id: uid(), createdAt: Date.now() };
+    setState((prev) => ({ ...prev, warehouses: [wh, ...prev.warehouses] }));
+    log('create', 'warehouse', `أُضيف مستودع: ${wh.name}`);
+    return wh;
+  }, [log]);
+
+  const deleteWarehouse = useCallback((id: string) => {
+    setState((prev) => ({ ...prev, warehouses: prev.warehouses.filter((w) => w.id !== id) }));
+    log('delete', 'warehouse', `تم حذف المستودع ${id}`);
+  }, [log]);
+
+  const addEmployee = useCallback((e: Omit<Employee, 'id' | 'createdAt'>) => {
+    const emp: Employee = { ...e, id: uid(), createdAt: Date.now() };
+    setState((prev) => ({ ...prev, employees: [emp, ...prev.employees] }));
+    log('create', 'employee', `أُضيف موظف: ${emp.name}`);
+    return emp;
+  }, [log]);
+
+  const deleteEmployee = useCallback((id: string) => {
+    setState((prev) => ({ ...prev, employees: prev.employees.filter((e) => e.id !== id) }));
+    log('delete', 'employee', `تم حذف الموظف ${id}`);
+  }, [log]);
+
   const clearAll = useCallback(() => {
     setState(initialState);
     localStorage.removeItem(STORAGE_KEY);
@@ -304,6 +341,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     deleteTransaction,
     setBudget,
     updateSettings,
+    addWarehouse,
+    deleteWarehouse,
+    addEmployee,
+    deleteEmployee,
     log,
     clearAll,
     seedDemo,

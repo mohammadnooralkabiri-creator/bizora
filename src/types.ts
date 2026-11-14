@@ -76,6 +76,21 @@ export interface Settings {
   businessName: string;
 }
 
+export interface Warehouse {
+  id: string;
+  name: string;
+  location: string;
+  createdAt: number;
+}
+
+export interface Employee {
+  id: string;
+  name: string;
+  role: string;
+  username: string;
+  createdAt: number;
+}
+
 export interface User {
   username: string;
   password: string;
@@ -90,4 +105,6 @@ export interface AppState {
   budget: Budget;
   logs: AuditLog[];
   settings: Settings;
+  warehouses: Warehouse[];
+  employees: Employee[];
 }
