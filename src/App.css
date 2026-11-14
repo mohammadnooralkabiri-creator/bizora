@@ -884,6 +884,16 @@ footer {
 .store-contact:hover { background: #DBEAFE; color: #1D4ED8; }
 .store-contact-icon { font-size: 18px; }
 .store-footer { text-align: center; padding: 20px; color: #64748B; font-size: 13px; border-top: 1px solid #E2E8F0; background: #FFFFFF; }
+.links-manage { display: flex; flex-direction: column; gap: 12px; }
+.link-row { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.link-row-head { display: flex; align-items: center; gap: 8px; }
+.link-row-head strong { flex: 1; }
+.link-open { color: #2563EB; text-decoration: none; font-size: 13px; }
+.link-view { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.link-value { color: #0F172A; word-break: break-all; }
+.link-empty { color: #94A3B8; }
+.link-edit { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.link-edit input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; }
 .store-cart-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .store-cart-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid #E2E8F0; }
 .store-cart-qty { display: flex; align-items: center; gap: 6px; }
