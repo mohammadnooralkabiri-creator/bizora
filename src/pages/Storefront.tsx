@@ -75,10 +75,11 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
         ) : (
           products.map((p) => (
             <div className="product-card" key={p.id}>
+              <div className="product-emoji">{p.name.charAt(0)}</div>
               <h3>{p.name}</h3>
-              <p className="muted">{p.category}</p>
+              <p className="muted">{p.category || 'عام'}</p>
               <strong>{p.price.toFixed(2)} {settings.currency}</strong>
-              <p className="muted">مخزون: {p.quantity}</p>
+              <p className="stock">المخزون: {p.quantity}</p>
               <button className="primary-btn full" disabled={p.quantity <= 0} onClick={() => addToCart(p.id)}>
                 {p.quantity <= 0 ? 'نفد' : 'أضف للسلة'}
               </button>
