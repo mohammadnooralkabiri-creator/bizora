@@ -1,6 +1,27 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
 import Modal from '../components/Modal';
+import type { Invoice } from '../types';
+
+const printInvoice = (inv: Invoice, currency: string) => {
+  const w = window.open('', '_blank');
+  if (!w) return;
+  const rows = inv.items.map((i: Invoice['items'][number]) => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price.toFixed(2)}</td><td>${(i.qty * i.price).toFixed(2)}</td></tr>`).join('');
+  w.document.write(`
+    <html dir="rtl"><head><title>فاتورة ${inv.id.slice(0,6)}</title>
+    <style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ccc;padding:8px;text-align:right;}</style>
+    </head><body>
+    <h2>فاتورة #${inv.id.slice(0,6)}</h2>
+    <p>العميل: ${inv.customerName}</p>
+    <table><thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}</tbody></table>
+    <p>المجموع الفرعي: ${inv.subtotal.toFixed(2)} ${currency}</p>
+    <p>الضريبة: ${inv.tax.toFixed(2)}</p>
+    <p>الإجمالي: ${inv.total.toFixed(2)} ${currency}</p>
+    </body></html>
+  `);
+  w.document.close();
+  w.print();
+};
 
 export default function Invoices() {
   const { state, addInvoice, toggleInvoicePaid, deleteInvoice } = useStore();
@@ -64,6 +85,7 @@ export default function Invoices() {
                     </button>
                   </td>
                   <td>
+                    <button className="small-btn" onClick={() => printInvoice(inv, settings.currency)}>طباعة</button>
                     <button className="small-btn danger" onClick={() => deleteInvoice(inv.id)}>حذف</button>
                   </td>
                 </tr>
