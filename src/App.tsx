@@ -12,6 +12,7 @@ import Profits from './pages/Profits';
 import Reports from './pages/Reports';
 import AuditLog from './pages/AuditLog';
 import WhatsApp from './pages/WhatsApp';
+import Links from './pages/Links';
 import Settings from './pages/Settings';
 import Accounts from './pages/Accounts';
 import POS from './pages/POS';
@@ -35,6 +36,7 @@ const pages: Record<string, React.ComponentType> = {
   reports: Reports,
   audit: AuditLog,
   whatsapp: WhatsApp,
+  links: Links,
   settings: Settings,
   accounts: Accounts,
   pos: POS,
@@ -49,8 +51,8 @@ const pages: Record<string, React.ComponentType> = {
 };
 
 const ROLE_PAGES: Record<string, string[]> = {
-  owner: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
-  admin: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
+  owner: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','links','settings','accounts'],
+  admin: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','links','settings','accounts'],
   viewer: ['dashboard','reports','notifications','audit'],
   finance: ['dashboard','finance','profits','withdrawals','expenses','invoices','reports','notifications','audit'],
   warehouse: ['dashboard','products','inventory','warehouses','reports','notifications'],
@@ -121,6 +123,7 @@ function activeLabel(k: string) {
     reports: 'التقارير',
     audit: 'السجل',
     whatsapp: 'واتساب',
+    links: 'روابط',
     settings: 'الإعدادات',
     accounts: 'الحسابات',
     pos: 'نقطة البيع',

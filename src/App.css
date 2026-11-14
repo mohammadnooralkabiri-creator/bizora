@@ -852,6 +852,9 @@ footer {
 .store-filters { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
 .store-filters .search-input { flex: 1; min-width: 200px; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 10px; }
 .store-filters select { padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; }
+.links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.links-grid .wa-big-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: 12px; background: #DBEAFE; color: #1D4ED8; text-decoration: none; font-weight: 600; border: 1px solid #BFDBFE; }
+.links-grid .wa-big-btn:hover { background: #2563EB; color: #FFFFFF; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
 .product-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 8px rgba(15,23,42,0.06); transition: transform 0.15s ease, box-shadow 0.15s ease; }
 .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(37,99,235,0.12); }

@@ -17,7 +17,7 @@ const navItems = [
   { key: 'stores', label: 'المتاجر', icon: '▧' },
   { key: 'integrations', label: 'التكاملات', icon: '▧' },
   { key: 'audit', label: 'السجل', icon: '☰' },
-  { key: 'whatsapp', label: 'واتساب', icon: 'W' },
+  { key: 'links', label: 'روابط', icon: '🔗' },
   { key: 'settings', label: 'الإعدادات', icon: '⚙' },
   { key: 'accounts', label: 'الحسابات', icon: '☰' },
 ];
@@ -33,8 +33,8 @@ interface SidebarProps {
 }
 
 const ROLE_PAGES: Record<string, string[]> = {
-  owner: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
-  admin: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','whatsapp','settings','accounts'],
+  owner: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','links','settings','accounts'],
+  admin: ['dashboard','pos','orders','products','inventory','warehouses','invoices','finance','profits','withdrawals','expenses','reports','notifications','employees','stores','integrations','audit','links','settings','accounts'],
   viewer: ['dashboard','reports','notifications','audit'],
   finance: ['dashboard','finance','profits','withdrawals','expenses','invoices','reports','notifications','audit'],
   warehouse: ['dashboard','products','inventory','warehouses','reports','notifications'],
