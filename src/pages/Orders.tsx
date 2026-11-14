@@ -65,7 +65,7 @@ export default function Orders() {
       <div className="card">
         <input className="search-input" placeholder="بحث..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ marginBottom: 12 }} />
         {filteredOrders.length === 0 ? (
-          <p className="empty">لا توجد طلبات</p>
+          <p className="empty">مافي</p>
         ) : (
           <table className="table">
             <thead>

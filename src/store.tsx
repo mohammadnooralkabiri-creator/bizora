@@ -10,6 +10,12 @@ const defaultSettings: Settings = {
   whatsappGroupLink: 'https://chat.whatsapp.com/your-group-link',
   currency: 'AED',
   businessName: 'BIZORA',
+  phone: '',
+  email: '',
+  instagram: '',
+  snapchat: '',
+  tiktok: '',
+  website: '',
 };
 
 const defaultAccounts: User[] = [

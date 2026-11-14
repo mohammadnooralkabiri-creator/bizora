@@ -69,6 +69,30 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
 
       {success && <div className="alert-banner">{success}</div>}
 
+      <div className="store-contacts">
+        {settings.whatsappGroupLink && (
+          <a className="wa-big-btn" href={settings.whatsappGroupLink} target="_blank" rel="noreferrer">💬 واتساب</a>
+        )}
+        {settings.phone && (
+          <a className="wa-big-btn" href={`tel:${settings.phone}`}>📞 {settings.phone}</a>
+        )}
+        {settings.email && (
+          <a className="wa-big-btn" href={`mailto:${settings.email}`}>✉️ {settings.email}</a>
+        )}
+        {settings.instagram && (
+          <a className="wa-big-btn" href={settings.instagram} target="_blank" rel="noreferrer">📸 Instagram</a>
+        )}
+        {settings.snapchat && (
+          <a className="wa-big-btn" href={settings.snapchat} target="_blank" rel="noreferrer">👻 Snapchat</a>
+        )}
+        {settings.tiktok && (
+          <a className="wa-big-btn" href={settings.tiktok} target="_blank" rel="noreferrer">🎵 TikTok</a>
+        )}
+        {settings.website && (
+          <a className="wa-big-btn" href={settings.website} target="_blank" rel="noreferrer">🌐 الموقع</a>
+        )}
+      </div>
+
       <div className="product-grid">
         {products.length === 0 ? (
           <p className="empty">لا توجد منتجات متاحة</p>

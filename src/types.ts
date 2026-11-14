@@ -74,6 +74,12 @@ export interface Settings {
   whatsappGroupLink: string;
   currency: string;
   businessName: string;
+  phone?: string;
+  email?: string;
+  instagram?: string;
+  snapchat?: string;
+  tiktok?: string;
+  website?: string;
 }
 
 export interface Warehouse {

@@ -30,6 +30,18 @@ export default function Settings() {
           <input type="number" value={form.lowStockThreshold} onChange={(e) => setForm({ ...form, lowStockThreshold: Number(e.target.value) })} />
           <label>رابط قروب الواتس</label>
           <input value={form.whatsappGroupLink} onChange={(e) => setForm({ ...form, whatsappGroupLink: e.target.value })} />
+          <label>رقم الهاتف</label>
+          <input value={form.phone || ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <label>البريد الإلكتروني</label>
+          <input value={form.email || ''} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <label>Instagram</label>
+          <input value={form.instagram || ''} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
+          <label>Snapchat</label>
+          <input value={form.snapchat || ''} onChange={(e) => setForm({ ...form, snapchat: e.target.value })} />
+          <label>TikTok</label>
+          <input value={form.tiktok || ''} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} />
+          <label>الموقع الإلكتروني</label>
+          <input value={form.website || ''} onChange={(e) => setForm({ ...form, website: e.target.value })} />
           <button className="primary-btn" onClick={save}>حفظ الإعدادات</button>
         </div>
       </div>
