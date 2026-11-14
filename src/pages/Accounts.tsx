@@ -23,12 +23,26 @@ export default function Accounts() {
   const [role, setRole] = useState<Role>('viewer');
   const [editing, setEditing] = useState<string | null>(null);
   const [editRole, setEditRole] = useState<Role>('viewer');
+  const [error, setError] = useState('');
 
   const isOwner = user?.role === 'owner' || user?.role === 'admin';
+
+  if (!isOwner) {
+    return (
+      <div className="page" dir="rtl">
+        <div className="alert-banner">⚠ هذه الصفحة مخصصة للمالك/المدير فقط.</div>
+      </div>
+    );
+  }
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) return;
+    if (!editing && state.accounts.some((a) => a.username === username.trim())) {
+      setError('اسم المستخدم موجود مسبقاً');
+      return;
+    }
+    setError('');
     if (editing) {
       updateAccount(editing, { role: editRole });
       setEditing(null);
@@ -76,6 +90,7 @@ export default function Accounts() {
                 <option key={r} value={r}>{ROLE_LABELS[r]}</option>
               ))}
             </select>
+            {error && <div className="login-error">{error}</div>}
             <button type="submit" className="primary-btn full">{editing ? 'حفظ' : 'إنشاء حساب'}</button>
             {editing && <button type="button" className="secondary-btn full" onClick={() => setEditing(null)}>إلغاء</button>}
           </form>
@@ -97,7 +112,7 @@ export default function Accounts() {
                   <td>{a.username} {a.id === user?.id && '(أنت)'}</td>
                   <td>{ROLE_LABELS[a.role] || a.role}</td>
                   <td className="actions-cell">
-                    {isOwner && a.role !== 'owner' && (
+                    {isOwner && a.role !== 'owner' && a.id !== user?.id && (
                       <>
                         <button className="small-btn" onClick={() => startEdit(a)}>تعديل</button>
                         <button className="small-btn danger" onClick={() => deleteAccount(a.id)}>حذف</button>

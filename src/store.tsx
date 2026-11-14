@@ -319,11 +319,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [log]);
 
   const deleteAccount = useCallback((id: string) => {
-    setState((prev) => ({
-      ...prev,
-      accounts: prev.accounts.filter((a) => a.id !== id),
-      user: prev.user && prev.user.id === id ? null : prev.user,
-    }));
+    setState((prev) => {
+      const target = prev.accounts.find((a) => a.id === id);
+      if (!target || target.role === 'owner') return prev;
+      if (prev.user && prev.user.id === id) return prev;
+      return {
+        ...prev,
+        accounts: prev.accounts.filter((a) => a.id !== id),
+        user: prev.user && prev.user.id === id ? null : prev.user,
+      };
+    });
     log('delete', 'account', `تم حذف الحساب ${id}`);
   }, [log]);
 
