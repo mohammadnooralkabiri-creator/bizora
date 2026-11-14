@@ -100,6 +100,12 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
         {settings.website && (
           <a className="wa-big-btn" href={settings.website} target="_blank" rel="noreferrer">🌐 الموقع</a>
         )}
+        {settings.discord && (
+          <a className="wa-big-btn" href={settings.discord} target="_blank" rel="noreferrer">💬 Discord</a>
+        )}
+        {settings.facebook && (
+          <a className="wa-big-btn" href={settings.facebook} target="_blank" rel="noreferrer">📘 Facebook</a>
+        )}
       </div>
 
       <div className="store-filters">

@@ -80,6 +80,8 @@ export interface Settings {
   snapchat?: string;
   tiktok?: string;
   website?: string;
+  discord?: string;
+  facebook?: string;
 }
 
 export interface Warehouse {

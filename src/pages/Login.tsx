@@ -6,40 +6,27 @@ interface LoginProps {
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const { state, loginByEmail } = useStore();
-  const { accounts } = state;
-  const [step, setStep] = useState<'email' | 'code'>('email');
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [sentCode, setSentCode] = useState('');
+  const { login, register } = useStore();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [info, setInfo] = useState('');
 
-  const sendCode = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setInfo('');
-    const acc = accounts.find((a) => a.email === email.trim() || a.username === email.trim());
-    if (!acc) {
-      setError('لا يوجد حساب بهذا البريد');
+    if (!username.trim() || !password.trim()) {
+      setError('يرجى إدخال اسم المستخدم وكلمة المرور');
       return;
     }
-    const c = Math.floor(100000 + Math.random() * 900000).toString();
-    setSentCode(c);
-    setStep('code');
-    setInfo(`تم إرسال كود التحقق إلى ${email} (تجريبي: ${c})`);
-  };
-
-  const verify = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    if (code.trim() !== sentCode) {
-      setError('كود التحقق غير صحيح');
-      return;
+    if (mode === 'login') {
+      const ok = login(username.trim(), password);
+      if (ok) onLogin();
+      else setError('بيانات الدخول غير صحيحة (جرب admin / admin)');
+    } else {
+      register(username.trim(), password);
+      onLogin();
     }
-    const ok = loginByEmail(email.trim());
-    if (ok) onLogin();
-    else setError('فشل تسجيل الدخول');
   };
 
   return (
@@ -50,27 +37,21 @@ export default function Login({ onLogin }: LoginProps) {
           <h1>bizora</h1>
           <p>منصة إدارة المشاريع الصغيرة</p>
         </div>
-        <form onSubmit={step === 'email' ? sendCode : verify} className="login-form">
-          <h2>{step === 'email' ? 'تسجيل الدخول بالبريد' : 'أدخل كود التحقق'}</h2>
-          {step === 'email' ? (
-            <>
-              <label>البريد الإلكتروني</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@bizora.com" required />
-            </>
-          ) : (
-            <>
-              <label>كود التحقق (6 أرقام)</label>
-              <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="123456" required />
-              <button type="button" className="login-switch" onClick={() => setStep('email')}>تغيير البريد</button>
-            </>
-          )}
+        <form onSubmit={submit} className="login-form">
+          <h2>{mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب'}</h2>
+          <label>اسم المستخدم</label>
+          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" />
+          <label>كلمة المرور</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" />
           {error && <div className="login-error">{error}</div>}
-          {info && <div className="login-hint">{info}</div>}
           <button type="submit" className="login-btn">
-            {step === 'email' ? 'إرسال الكود' : 'تحقق ودخول'}
+            {mode === 'login' ? 'دخول' : 'تسجيل'}
+          </button>
+          <button type="button" className="login-switch" onClick={() => setMode(mode === 'login' ? 'register' : 'login')}>
+            {mode === 'login' ? 'ليس لديك حساب؟ سجّل الآن' : 'لديك حساب؟ سجّل دخول'}
           </button>
         </form>
-        <p className="login-hint">الدخول الافتراضي: admin@bizora.com (كود يُرسل عند الطلب)</p>
+        <p className="login-hint">الدخول الافتراضي: admin / admin</p>
       </div>
     </div>
   );

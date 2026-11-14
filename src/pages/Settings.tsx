@@ -42,6 +42,10 @@ export default function Settings() {
           <input value={form.tiktok || ''} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} />
           <label>الموقع الإلكتروني</label>
           <input value={form.website || ''} onChange={(e) => setForm({ ...form, website: e.target.value })} />
+          <label>Discord (مجتمع)</label>
+          <input value={form.discord || ''} onChange={(e) => setForm({ ...form, discord: e.target.value })} />
+          <label>Facebook</label>
+          <input value={form.facebook || ''} onChange={(e) => setForm({ ...form, facebook: e.target.value })} />
           <button className="primary-btn" onClick={save}>حفظ الإعدادات</button>
         </div>
       </div>

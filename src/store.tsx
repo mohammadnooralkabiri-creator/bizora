@@ -16,6 +16,8 @@ const defaultSettings: Settings = {
   snapchat: '',
   tiktok: '',
   website: '',
+  discord: '',
+  facebook: '',
 };
 
 const defaultAccounts: User[] = [
