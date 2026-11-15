@@ -115,6 +115,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     saveState(state);
   }, [state]);
 
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) {
+        setState(loadState());
+      }
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
   const log = useCallback((action: string, entity: string, details: string) => {
     setState((prev) => ({
       ...prev,

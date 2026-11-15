@@ -63,7 +63,7 @@ const ROLE_PAGES: Record<string, string[]> = {
 };
 
 function App() {
-  const { state, logout } = useStore();
+  const { state, logout, updateSettings } = useStore();
   const [active, setActive] = useState('dashboard');
   const [showLogin, setShowLogin] = useState(false);
 
@@ -110,6 +110,12 @@ function App() {
           <div className="breadcrumb">{t(lang, 'workspace')} <span>/</span> {t(lang, safeActive)}</div>
           <div className="top-actions">
             {lowStockCount > 0 && <span className="top-alert">⚠ {lowStockCount}</span>}
+            <button className="top-toggle" onClick={() => updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} title="المظهر">
+              {theme === 'dark' ? '☀' : '🌙'}
+            </button>
+            <button className="top-toggle" onClick={() => updateSettings({ language: lang === 'ar' ? 'en' : 'ar' })} title="اللغة">
+              {lang === 'ar' ? 'EN' : 'AR'}
+            </button>
             <div className="top-avatar">{user.username.charAt(0).toUpperCase()}</div>
           </div>
         </header>
