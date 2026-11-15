@@ -5,7 +5,7 @@ import { MessageCircle, Gamepad2, Camera, Aperture, Music, Users2, Globe, Phone,
 import { t } from '../i18n';
 
 export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void }) {
-  const { state, addOrder, addInvoice } = useStore();
+  const { state, addOrder, addInvoice, updateSettings } = useStore();
   const { products, settings } = state;
   const lang = settings.language || 'ar';
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
@@ -112,6 +112,12 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
           </div>
         </div>
         <div className="store-header-actions">
+          <button className="top-toggle" onClick={() => updateSettings({ theme: (settings.theme || 'light') === 'dark' ? 'light' : 'dark' })}>
+            {(settings.theme || 'light') === 'dark' ? '☀' : '🌙'}
+          </button>
+          <button className="top-toggle" onClick={() => updateSettings({ language: lang === 'ar' ? 'en' : 'ar' })}>
+            {lang === 'ar' ? 'EN' : 'AR'}
+          </button>
           <button className="store-cart-btn" onClick={() => setCheckoutOpen(true)} disabled={cart.length === 0}>
             🛒 {t(lang, 'cart')}
             {cartCount > 0 && <span className="store-cart-count">{cartCount}</span>}
