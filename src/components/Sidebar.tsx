@@ -31,6 +31,7 @@ interface SidebarProps {
   lowStockCount: number;
   onLogout: () => void;
   user: string;
+  avatar?: string;
   role?: string;
   lang?: Lang;
 }
@@ -46,7 +47,7 @@ const ROLE_PAGES: Record<string, string[]> = {
   employee: ['dashboard','orders','products','inventory','reports','notifications'],
 };
 
-export default function Sidebar({ active, setActive, orderCount, lowStockCount, onLogout, user, role = 'employee', lang = 'ar' }: SidebarProps) {
+export default function Sidebar({ active, setActive, orderCount, lowStockCount, onLogout, user, avatar, role = 'employee', lang = 'ar' }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -86,7 +87,7 @@ export default function Sidebar({ active, setActive, orderCount, lowStockCount, 
           <p>نحن هنا لمساعدتك في إدارة مشروعك.</p>
         </div>
         <div className="profile">
-          <div className="avatar">{user.charAt(0).toUpperCase()}</div>
+          {avatar ? <img className="avatar" src={avatar} alt="avatar" style={{ objectFit: 'cover' }} /> : <div className="avatar">{user.charAt(0).toUpperCase()}</div>}
           <div>
             <strong>{user}</strong>
             <span>الحساب</span>

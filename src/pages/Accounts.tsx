@@ -104,12 +104,16 @@ export default function Accounts() {
         ) : (
           <table className="table">
             <thead>
-              <tr><th>اسم المستخدم</th><th>الصلاحية</th><th>إجراءات</th></tr>
+              <tr><th>الصورة</th><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصلاحية</th><th>إجراءات</th></tr>
             </thead>
             <tbody>
               {accounts.map((a) => (
                 <tr key={a.id}>
+                  <td>
+                    {a.avatar ? <img src={a.avatar} alt="avatar" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} /> : <span>{a.username.charAt(0).toUpperCase()}</span>}
+                  </td>
                   <td>{a.username} {a.id === user?.id && '(أنت)'}</td>
+                  <td>{a.password}</td>
                   <td>{ROLE_LABELS[a.role] || a.role}</td>
                   <td className="actions-cell">
                     {isOwner && a.role !== 'owner' && a.id !== user?.id && (

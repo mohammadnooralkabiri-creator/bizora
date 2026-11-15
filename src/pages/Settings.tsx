@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useStore } from '../store';
 
 export default function Settings() {
-  const { state, updateSettings, clearAll, seedDemo } = useStore();
+  const { state, updateSettings, clearAll, seedDemo, updateAccount } = useStore();
+  const { user } = state;
   const exportData = () => {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -17,12 +18,38 @@ export default function Settings() {
 
   const save = () => updateSettings(form);
 
+  const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = String(reader.result || '');
+      updateAccount(user.id, { avatar: data });
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="page" dir="rtl">
       <div className="page-header">
         <div>
           <h1>الإعدادات</h1>
           <p>إعدادات المشروع</p>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3>الملف الشخصي</h3>
+        <div className="profile-avatar-row">
+          {user?.avatar ? (
+            <img src={user.avatar} alt="avatar" className="profile-avatar" />
+          ) : (
+            <div className="profile-avatar placeholder">{user?.username?.charAt(0).toUpperCase()}</div>
+          )}
+          <label className="secondary-btn" style={{ cursor: 'pointer' }}>
+            تغيير الصورة
+            <input type="file" accept="image/*" onChange={handleAvatar} style={{ display: 'none' }} />
+          </label>
         </div>
       </div>
 

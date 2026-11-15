@@ -894,6 +894,9 @@ footer {
 .link-empty { color: #94A3B8; }
 .link-edit { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .link-edit input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; }
+.profile-avatar-row { display: flex; align-items: center; gap: 16px; }
+.profile-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #E2E8F0; }
+.profile-avatar.placeholder { display: grid; place-items: center; background: #2563EB; color: #FFFFFF; font-size: 28px; font-weight: 700; }
 .top-toggle { background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 14px; }
 .toolbar-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .toolbar-row .search-input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; }

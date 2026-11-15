@@ -102,6 +102,7 @@ function App() {
         lowStockCount={lowStockCount}
         onLogout={logout}
         user={user.username}
+        avatar={user.avatar}
         role={role}
         lang={lang}
       />
@@ -116,7 +117,7 @@ function App() {
             <button className="top-toggle" onClick={() => updateSettings({ language: lang === 'ar' ? 'en' : 'ar' })} title="اللغة">
               {lang === 'ar' ? 'EN' : 'AR'}
             </button>
-            <div className="top-avatar">{user.username.charAt(0).toUpperCase()}</div>
+            {user.avatar ? <img className="top-avatar" src={user.avatar} alt="avatar" style={{ objectFit: 'cover' }} /> : <div className="top-avatar">{user.username.charAt(0).toUpperCase()}</div>}
           </div>
         </header>
         <section className="content">
