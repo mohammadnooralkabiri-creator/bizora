@@ -8,6 +8,7 @@ export interface Product {
   cost: number; // cost price
   quantity: number;
   minStock: number;
+  image?: string;
   createdAt: number;
 }
 
@@ -68,6 +69,9 @@ export interface AuditLog {
   createdAt: number;
 }
 
+export type Theme = 'light' | 'dark';
+export type Language = 'ar' | 'en';
+
 export interface Settings {
   taxRate: number; // percent
   lowStockThreshold: number;
@@ -82,6 +86,8 @@ export interface Settings {
   website?: string;
   discord?: string;
   facebook?: string;
+  theme?: Theme;
+  language?: Language;
 }
 
 export interface Warehouse {

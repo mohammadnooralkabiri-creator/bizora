@@ -1,4 +1,6 @@
 
+import { t, type Lang } from '../i18n';
+
 const navItems = [
   { key: 'dashboard', label: 'الرئيسية', icon: '⌂' },
   { key: 'pos', label: 'نقطة البيع', icon: '▤' },
@@ -30,6 +32,7 @@ interface SidebarProps {
   onLogout: () => void;
   user: string;
   role?: string;
+  lang?: Lang;
 }
 
 const ROLE_PAGES: Record<string, string[]> = {
@@ -43,7 +46,7 @@ const ROLE_PAGES: Record<string, string[]> = {
   employee: ['dashboard','orders','products','inventory','reports','notifications'],
 };
 
-export default function Sidebar({ active, setActive, orderCount, lowStockCount, onLogout, user, role = 'employee' }: SidebarProps) {
+export default function Sidebar({ active, setActive, orderCount, lowStockCount, onLogout, user, role = 'employee', lang = 'ar' }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -69,7 +72,7 @@ export default function Sidebar({ active, setActive, orderCount, lowStockCount, 
             onClick={() => setActive(item.key)}
           >
             <span className="nav-icon">{item.icon}</span>
-            {item.label}
+            {t(lang, item.key)}
             {item.key === 'orders' && orderCount > 0 && <span className="nav-count">{orderCount}</span>}
             {item.key === 'inventory' && lowStockCount > 0 && <span className="nav-count alert">{lowStockCount}</span>}
           </button>

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from './store';
+import { t } from './i18n';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
 import Storefront from './pages/Storefront';
@@ -66,6 +67,14 @@ function App() {
   const [active, setActive] = useState('dashboard');
   const [showLogin, setShowLogin] = useState(false);
 
+  const theme = state.settings.theme || 'light';
+  const lang = state.settings.language || 'ar';
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [theme, lang]);
+
   if (!state.user && !showLogin) {
     return <Storefront onAdminLogin={() => setShowLogin(true)} />;
   }
@@ -94,10 +103,11 @@ function App() {
         onLogout={logout}
         user={user.username}
         role={role}
+        lang={lang}
       />
       <main className="main">
         <header className="topbar">
-          <div className="breadcrumb">مساحة العمل <span>/</span> {activeLabel(safeActive)}</div>
+          <div className="breadcrumb">{t(lang, 'workspace')} <span>/</span> {t(lang, safeActive)}</div>
           <div className="top-actions">
             {lowStockCount > 0 && <span className="top-alert">⚠ {lowStockCount}</span>}
             <div className="top-avatar">{user.username.charAt(0).toUpperCase()}</div>
@@ -112,31 +122,5 @@ function App() {
   );
 }
 
-function activeLabel(k: string) {
-  const map: Record<string, string> = {
-    dashboard: 'الرئيسية',
-    orders: 'الطلبات',
-    products: 'المنتجات',
-    inventory: 'المخزون',
-    invoices: 'الفواتير',
-    profits: 'الأرباح',
-    reports: 'التقارير',
-    audit: 'السجل',
-    whatsapp: 'واتساب',
-    links: 'روابط',
-    settings: 'الإعدادات',
-    accounts: 'الحسابات',
-    pos: 'نقطة البيع',
-    finance: 'المالية',
-    withdrawals: 'السحوبات',
-    expenses: 'المصروفات',
-    notifications: 'الإشعارات',
-    employees: 'الموظفون',
-    warehouses: 'المستودعات',
-    integrations: 'التكاملات',
-    stores: 'المتاجر',
-  };
-  return map[k] || k;
-}
 
 export default App;

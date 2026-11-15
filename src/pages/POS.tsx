@@ -10,6 +10,7 @@ export default function POS() {
   const [qty, setQty] = useState(1);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [customerName, setCustomerName] = useState('عميل POS');
+  const [submitting, setSubmitting] = useState(false);
 
   const addToCart = () => {
     if (!productId) return;
@@ -32,7 +33,9 @@ export default function POS() {
 
   const checkout = (e: React.FormEvent) => {
     e.preventDefault();
-    if (cart.length === 0) return;
+    if (submitting || cart.length === 0) return;
+    setSubmitting(true);
+    try {
     const orderItems = cart.map((c) => {
       const p = products.find((x) => x.id === c.productId)!;
       return { productId: p.id, productName: p.name, qty: c.qty, price: p.price, cost: p.cost };
@@ -49,6 +52,11 @@ export default function POS() {
     setCart([]);
     setOpenCheckout(false);
     setCustomerName('عميل POS');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -110,7 +118,7 @@ export default function POS() {
           <label>اسم العميل</label>
           <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
           <div className="total-line">المجموع: {total.toFixed(2)} {settings.currency}</div>
-          <button type="submit" className="primary-btn full">تأكيد ودفع</button>
+          <button type="submit" className="primary-btn full" disabled={submitting}>{submitting ? 'جاري...' : 'تأكيد ودفع'}</button>
         </form>
       </Modal>
     </div>

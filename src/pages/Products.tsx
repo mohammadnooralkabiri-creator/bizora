@@ -9,9 +9,9 @@ export default function Products() {
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: '', category: '', price: 0, cost: 0, quantity: 0, minStock: 10 });
+  const [form, setForm] = useState({ name: '', category: '', price: 0, cost: 0, quantity: 0, minStock: 10, image: '' });
 
-  const reset = () => { setForm({ name: '', category: '', price: 0, cost: 0, quantity: 0, minStock: 10 }); setEditing(null); };
+  const reset = () => { setForm({ name: '', category: '', price: 0, cost: 0, quantity: 0, minStock: 10, image: '' }); setEditing(null); };
 
   const filtered = products.filter((p) =>
     !search || p.name.includes(search) || p.category.includes(search)
@@ -19,7 +19,7 @@ export default function Products() {
 
   const openEdit = (p: Product) => {
     setEditing(p.id);
-    setForm({ name: p.name, category: p.category, price: p.price, cost: p.cost, quantity: p.quantity, minStock: p.minStock });
+    setForm({ name: p.name, category: p.category, price: p.price, cost: p.cost, quantity: p.quantity, minStock: p.minStock, image: p.image || '' });
     setOpen(true);
   };
 
@@ -46,6 +46,14 @@ export default function Products() {
     };
     reader.readAsText(file);
     e.target.value = '';
+  };
+
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setForm((f) => ({ ...f, image: String(reader.result || '') }));
+    reader.readAsDataURL(file);
   };
 
   const submit = (e: React.FormEvent) => {
@@ -126,6 +134,9 @@ export default function Products() {
           <input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })} />
           <label>حد التنبيه (مخزون منخفض)</label>
           <input type="number" value={form.minStock} onChange={(e) => setForm({ ...form, minStock: Number(e.target.value) })} />
+          <label>صورة المنتج</label>
+          <input type="file" accept="image/*" onChange={handleImage} />
+          {form.image && <img src={form.image} alt="preview" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }} />}
           <button type="submit" className="primary-btn full">حفظ</button>
         </form>
       </Modal>

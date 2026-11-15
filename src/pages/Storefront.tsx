@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { useStore } from '../store';
 import Modal from '../components/Modal';
 import { MessageCircle, Gamepad2, Camera, Aperture, Music, Users2, Globe, Phone, Mail } from 'lucide-react';
+import { t } from '../i18n';
 
 export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void }) {
   const { state, addOrder, addInvoice } = useStore();
   const { products, settings } = state;
+  const lang = settings.language || 'ar';
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [success, setSuccess] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
 
@@ -50,7 +53,10 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
 
   const submitOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!customerName.trim() || !phone.trim() || !address.trim() || cart.length === 0) return;
+    setSubmitting(true);
+    try {
     const orderItems = cart.map((c) => {
       const p = products.find((x) => x.id === c.productId)!;
       return { productId: p.id, productName: p.name, qty: c.qty, price: p.price, cost: p.cost };
@@ -76,6 +82,11 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
     setPhone('');
     setAddress('');
     setSuccess(`تم إنشاء الطلب #${order.id.slice(0, 6)} — سنتواصل معك عبر ${phone || 'الرقم المحفوظ'}`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const contacts = [
@@ -97,29 +108,29 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
           <div className="brand-icon">B</div>
           <div>
             <h1>{settings.businessName}</h1>
-            <span>متجرك — كل ما تحتاجه في مكان واحد</span>
+            <span>{t(lang, 'store')}</span>
           </div>
         </div>
         <div className="store-header-actions">
           <button className="store-cart-btn" onClick={() => setCheckoutOpen(true)} disabled={cart.length === 0}>
-            🛒 السلة
+            🛒 {t(lang, 'cart')}
             {cartCount > 0 && <span className="store-cart-count">{cartCount}</span>}
           </button>
-          <button className="store-admin-btn" onClick={onAdminLogin}>دخول الإدارة</button>
+          <button className="store-admin-btn" onClick={onAdminLogin}>{t(lang, 'adminLogin')}</button>
         </div>
       </header>
 
       {success && <div className="store-success">{success}</div>}
 
       <section className="store-hero">
-        <h2>مرحباً بك في {settings.businessName}</h2>
-        <p>تصفح المنتجات، أضف إلى السلة، وأرسل طلبك. سنتواصل معك قريباً.</p>
+        <h2>{t(lang, 'heroTitle')} {settings.businessName}</h2>
+        <p>{t(lang, 'heroSubtitle')}</p>
       </section>
 
       <section className="store-toolbar">
         <input
           className="store-search"
-          placeholder="ابحث عن منتج..."
+          placeholder={t(lang, 'searchProducts')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -128,7 +139,7 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
             className={`store-cat ${category === 'all' ? 'active' : ''}`}
             onClick={() => setCategory('all')}
           >
-            الكل
+            {t(lang, 'allCategories')}
           </button>
           {categories.map((c) => (
             <button
@@ -144,12 +155,16 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
 
       <section className="store-products">
         {filteredProducts.length === 0 ? (
-          <div className="store-empty">مافي منتجات متاحة</div>
+          <div className="store-empty">{t(lang, 'noneProducts')}</div>
         ) : (
           <div className="store-grid">
             {filteredProducts.map((p) => (
               <article className="store-product" key={p.id}>
-                <div className="store-product-image">{p.name.charAt(0)}</div>
+                {p.image ? (
+                  <img className="store-product-image" src={p.image} alt={p.name} />
+                ) : (
+                  <div className="store-product-image">{p.name.charAt(0)}</div>
+                )}
                 <div className="store-product-body">
                   <h3>{p.name}</h3>
                   <p className="store-product-cat">{p.category || 'عام'}</p>
@@ -164,7 +179,7 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
                     disabled={p.quantity <= 0}
                     onClick={() => addToCart(p.id)}
                   >
-                    {p.quantity <= 0 ? 'نفد المخزون' : 'أضف للسلة'}
+                    {p.quantity <= 0 ? t(lang, 'outOfStock') : t(lang, 'addToCart')}
                   </button>
                 </div>
               </article>
@@ -175,7 +190,7 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
 
       {contacts.length > 0 && (
         <section className="store-contacts">
-          <h3>تواصل معنا</h3>
+          <h3>{t(lang, 'contactUs')}</h3>
           <div className="store-contacts-grid">
             {contacts.map((c) => (
               <a key={c.label} className="store-contact" href={c.href} target="_blank" rel="noreferrer">
@@ -213,14 +228,14 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
                 );
               })}
             </div>
-            <div className="store-cart-total">المجموع: {total.toFixed(2)} {settings.currency}</div>
-            <label>الاسم</label>
+            <div className="store-cart-total">{t(lang, 'total')}: {total.toFixed(2)} {settings.currency}</div>
+            <label>{t(lang, 'name')}</label>
             <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
-            <label>رقم الهاتف (إجباري)</label>
+            <label>{t(lang, 'phone')} ({t(lang, 'required')})</label>
             <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+971..." required />
-            <label>العنوان (إجباري)</label>
+            <label>{t(lang, 'address')} ({t(lang, 'required')})</label>
             <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} required />
-            <button type="submit" className="primary-btn full">تأكيد الطلب</button>
+            <button type="submit" className="primary-btn full" disabled={submitting}>{submitting ? t(lang, 'submitting') : t(lang, 'confirmOrder')}</button>
           </form>
         )}
       </Modal>

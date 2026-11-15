@@ -18,11 +18,11 @@ const defaultSettings: Settings = {
   website: '',
   discord: '',
   facebook: '',
+  theme: 'light',
+  language: 'ar',
 };
 
-const defaultAccounts: User[] = [
-  { id: 'owner-admin', username: 'admin', email: 'admin@bizora.com', password: 'admin', role: 'owner', createdAt: Date.now() },
-];
+const defaultAccounts: User[] = [];
 
 const initialState: AppState = {
   user: null,
@@ -244,6 +244,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [log]);
 
   const addInvoice = useCallback((inv: Omit<Invoice, 'id' | 'createdAt' | 'tax' | 'total'>) => {
+    // prevent duplicate invoices for the same order
+    if (inv.orderId) {
+      const existing = loadState().invoices.find((i) => i.orderId === inv.orderId);
+      if (existing) return existing;
+    }
     const taxRate = inv.taxRate;
     const tax = (inv.subtotal * taxRate) / 100;
     const total = inv.subtotal + tax;

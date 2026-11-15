@@ -30,6 +30,16 @@ export default function Settings() {
           <input type="number" value={form.lowStockThreshold} onChange={(e) => setForm({ ...form, lowStockThreshold: Number(e.target.value) })} />
           <label>رابط قروب الواتس</label>
           <input value={form.whatsappGroupLink} onChange={(e) => setForm({ ...form, whatsappGroupLink: e.target.value })} />
+          <label>المظهر</label>
+          <select value={form.theme || 'light'} onChange={(e) => setForm({ ...form, theme: e.target.value as 'light' | 'dark' })}>
+            <option value="light">فاتح</option>
+            <option value="dark">داكن (حماية العين)</option>
+          </select>
+          <label>اللغة</label>
+          <select value={form.language || 'ar'} onChange={(e) => setForm({ ...form, language: e.target.value as 'ar' | 'en' })}>
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+          </select>
           <label>رقم الهاتف</label>
           <input value={form.phone || ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           <label>البريد الإلكتروني</label>
