@@ -895,6 +895,9 @@ footer {
 .link-edit { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .link-edit input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; }
 .top-toggle { background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 14px; }
+.toolbar-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.toolbar-row .search-input { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; }
+.toolbar-row select { padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 8px; background: #FFFFFF; }
 
 /* Dark mode */
 html.dark body { background: #0F172A; color: #F1F5F9; }

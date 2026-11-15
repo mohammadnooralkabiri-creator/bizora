@@ -6,7 +6,7 @@ import type { Invoice } from '../types';
 const printInvoice = (inv: Invoice, currency: string) => {
   const w = window.open('', '_blank');
   if (!w) return;
-  const rows = inv.items.map((i: Invoice['items'][number]) => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price.toFixed(2)}</td><td>${(i.qty * i.price).toFixed(2)}</td></tr>`).join('');
+  const rows = inv.items.map((i) => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price.toFixed(2)}</td><td>${(i.qty * i.price).toFixed(2)}</td></tr>`).join('');
   w.document.write(`
     <html dir="rtl"><head><title>فاتورة ${inv.id.slice(0,6)}</title>
     <style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ccc;padding:8px;text-align:right;}</style>
@@ -14,7 +14,7 @@ const printInvoice = (inv: Invoice, currency: string) => {
     <h2>فاتورة #${inv.id.slice(0,6)}</h2>
     <p>العميل: ${inv.customerName}</p>
     <table><thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}</tbody></table>
-    <p>المجموع الفرعي: ${inv.subtotal.toFixed(2)} ${currency}</p>
+    <p>المجموع الفرعي: ${inv.subtotal.toFixed(2)}</p>
     <p>الضريبة: ${inv.tax.toFixed(2)}</p>
     <p>الإجمالي: ${inv.total.toFixed(2)} ${currency}</p>
     </body></html>
@@ -31,6 +31,8 @@ export default function Invoices() {
   const [subtotal, setSubtotal] = useState(0);
   const [items, setItems] = useState<{ name: string; qty: number; price: number }[]>([]);
   const [newItem, setNewItem] = useState({ name: '', qty: 1, price: 0 });
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
 
   const addItem = () => {
     if (!newItem.name) return;
@@ -45,6 +47,15 @@ export default function Invoices() {
     setCustomerName(''); setSubtotal(0); setItems([]); setOpen(false);
   };
 
+  const filtered = invoices.filter((inv) => {
+    const matchSearch = !search || inv.customerName.includes(search) || inv.id.includes(search);
+    const matchFilter = filter === 'all' || (filter === 'paid' ? inv.paid : !inv.paid);
+    return matchSearch && matchFilter;
+  });
+
+  const totalPaid = invoices.filter((i) => i.paid).reduce((s, i) => s + i.total, 0);
+  const totalUnpaid = invoices.filter((i) => !i.paid).reduce((s, i) => s + i.total, 0);
+
   return (
     <div className="page" dir="rtl">
       <div className="page-header">
@@ -55,9 +66,32 @@ export default function Invoices() {
         <button className="primary-btn" onClick={() => setOpen(true)}>+ فاتورة جديدة</button>
       </div>
 
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-top"><span>إجمالي الفواتير</span><i>▧</i></div>
+          <strong>{invoices.length}</strong>
+        </div>
+        <div className="stat-card">
+          <div className="stat-top"><span>مدفوعة</span><i>✓</i></div>
+          <strong>{totalPaid.toFixed(2)} <small>{settings.currency}</small></strong>
+        </div>
+        <div className="stat-card">
+          <div className="stat-top"><span>غير مدفوعة</span><i>!</i></div>
+          <strong>{totalUnpaid.toFixed(2)} <small>{settings.currency}</small></strong>
+        </div>
+      </div>
+
       <div className="card">
-        {invoices.length === 0 ? (
-          <p className="empty">لا توجد فواتير</p>
+        <div className="toolbar-row">
+          <input className="search-input" placeholder="بحث..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <select value={filter} onChange={(e) => setFilter(e.target.value as 'all' | 'paid' | 'unpaid')}>
+            <option value="all">الكل</option>
+            <option value="paid">مدفوعة</option>
+            <option value="unpaid">غير مدفوعة</option>
+          </select>
+        </div>
+        {filtered.length === 0 ? (
+          <p className="empty">مافي</p>
         ) : (
           <table className="table">
             <thead>
@@ -72,7 +106,7 @@ export default function Invoices() {
               </tr>
             </thead>
             <tbody>
-              {invoices.map((inv) => (
+              {filtered.map((inv) => (
                 <tr key={inv.id}>
                   <td>{inv.id.slice(0, 6)}</td>
                   <td>{inv.customerName}</td>
@@ -80,11 +114,11 @@ export default function Invoices() {
                   <td>{inv.tax.toFixed(2)}</td>
                   <td>{inv.total.toFixed(2)} {settings.currency}</td>
                   <td>
-                    <button className={`small-btn ${inv.paid ? 'success' : ''}`} onClick={() => toggleInvoicePaid(inv.id)}>
+                    <button className={`small-btn ${inv.paid ? 'success' : 'danger'}`} onClick={() => toggleInvoicePaid(inv.id)}>
                       {inv.paid ? 'مدفوعة' : 'غير مدفوعة'}
                     </button>
                   </td>
-                  <td>
+                  <td className="actions-cell">
                     <button className="small-btn" onClick={() => printInvoice(inv, settings.currency)}>طباعة</button>
                     <button className="small-btn danger" onClick={() => deleteInvoice(inv.id)}>حذف</button>
                   </td>

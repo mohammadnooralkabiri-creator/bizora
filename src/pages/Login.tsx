@@ -12,6 +12,7 @@ export default function Login({ onLogin }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
 
   const isSetup = accounts.length === 0;
 
@@ -51,13 +52,19 @@ export default function Login({ onLogin }: LoginProps) {
           <label>كلمة المرور</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" />
           {error && <div className="login-error">{error}</div>}
+          {info && <div className="login-hint">{info}</div>}
           <button type="submit" className="login-btn">
             {isSetup ? 'إنشاء ودخول' : 'دخول'}
           </button>
           {!isSetup && (
-            <a className="login-switch" href={discord} target="_blank" rel="noreferrer">
-              لا تملك حساب؟ اطلب حساب عبر Discord (تكت)
-            </a>
+            <>
+              <button type="button" className="login-switch" onClick={() => setInfo('حاليا يمكنك الطلب لا أكثر. هذه الواجهة إدارية لا يمكنك الدخول.')}>
+                إنشاء حساب
+              </button>
+              <a className="login-switch" href={discord} target="_blank" rel="noreferrer">
+                لا تملك حساب؟ اطلب حساب عبر Discord (تكت)
+              </a>
+            </>
           )}
         </form>
       </div>
