@@ -901,28 +901,33 @@ footer {
 
 /* Dark mode */
 /* Dark mode (improved) */
-html.dark body { background: #0B1220; color: #E5E7EB; }
-html.dark .app, html.dark .storefront { background: #0B1220; color: #E5E7EB; }
+html.dark { color-scheme: dark; }
+html.dark body { background: #0F172A; color: #E2E8F0; }
+html.dark .app, html.dark .storefront, html.dark .login-page { background: #0F172A; color: #E2E8F0; }
 html.dark .sidebar { background: #111827; border-color: #1F2937; }
-html.dark .brand h2, html.dark .nav-item { color: #E5E7EB; }
+html.dark .brand h2, html.dark .nav-item, html.dark .workspace { color: #E2E8F0; }
+html.dark .side-label, html.dark .help-card p { color: #94A3B8; }
 html.dark .nav-item:hover { background: #1F2937; }
-html.dark .nav-item.selected { background: #1E3A8A; color: #FFFFFF; }
-html.dark .card, html.dark .modal, html.dark .product-card, html.dark .store-product, html.dark .link-row { background: #111827; border-color: #1F2937; color: #E5E7EB; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
-html.dark .topbar, html.dark .store-header, html.dark .store-footer, html.dark .store-contacts, html.dark .modal-header { background: #111827; border-color: #1F2937; }
-html.dark input, html.dark select, html.dark textarea { background: #0B1220; color: #E5E7EB; border-color: #1F2937; }
-html.dark .search-input { background: #0B1220; color: #E5E7EB; }
-html.dark .muted, html.dark .store-product-cat, html.dark footer { color: #9CA3AF; }
+html.dark .nav-item.selected { background: #2563EB; color: #FFFFFF; }
+html.dark .card, html.dark .modal, html.dark .product-card, html.dark .store-product, html.dark .link-row, html.dark .login-card { background: #111827; border-color: #1F2937; color: #E2E8F0; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+html.dark .topbar, html.dark .store-header, html.dark .store-footer, html.dark .store-contacts, html.dark .modal-header, html.dark .login-brand { background: #111827; border-color: #1F2937; }
+html.dark input, html.dark select, html.dark textarea { background: #0F172A; color: #E2E8F0; border-color: #334155; }
+html.dark .search-input { background: #0F172A; color: #E2E8F0; }
+html.dark .muted, html.dark .store-product-cat, html.dark footer, html.dark .login-hint { color: #94A3B8; }
 html.dark .store-hero { background: linear-gradient(135deg, #1E3A8A 0%, #111827 100%); }
 html.dark .store-hero h2 { color: #F9FAFB; }
 html.dark .store-hero p { color: #CBD5E1; }
-html.dark .store-contact { background: #1F2937; color: #E5E7EB; border-color: #334155; }
-html.dark .store-contact:hover { background: #1E3A8A; color: #FFFFFF; }
-html.dark .top-toggle { background: #1F2937; color: #E5E7EB; border-color: #334155; }
-html.dark .table th { background: #1F2937; color: #E5E7EB; }
-html.dark .table td { border-color: #1F2937; }
+html.dark .store-contact { background: #1F2937; color: #E2E8F0; border-color: #334155; }
+html.dark .store-contact:hover { background: #2563EB; color: #FFFFFF; }
+html.dark .top-toggle { background: #1F2937; color: #E2E8F0; border-color: #334155; }
+html.dark .table th { background: #1F2937; color: #E2E8F0; }
+html.dark .table td { border-color: #1F2937; color: #E2E8F0; }
 html.dark .stat-card, html.dark .report-card { background: #111827; border-color: #1F2937; }
 html.dark .progress-bar { background: #1F2937; }
-html.dark .modal-backdrop { background: rgba(0,0,0,0.7); }
+html.dark .modal-backdrop { background: rgba(0,0,0,0.75); }
+html.dark .status { color: #E2E8F0; }
+html.dark .login-error { background: #7F1D1D; color: #FECACA; }
+html.dark .alert-banner { background: #78350F; color: #FEF3C7; border-color: #92400E; }
 .store-cart-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .store-cart-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid #E2E8F0; }
 .store-cart-qty { display: flex; align-items: center; gap: 6px; }
