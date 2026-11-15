@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { AppState, Product, Order, Invoice, Transaction, Budget, Settings, OrderStatus, Warehouse, Employee, StockMovement, User } from './types';
-import { supabase } from './supabase';
 
 const STORAGE_KEY = 'bizora_state_v1';
 
@@ -113,46 +112,9 @@ const StoreContext = createContext<StoreContextValue | null>(null);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(loadState);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const channelRef = useRef<any>(null);
-  const isRemoteRef = useRef(false);
-  const isFirstRef = useRef(true);
 
   useEffect(() => {
     saveState(state);
-  }, [state]);
-
-  // Real-time sync across devices/tabs via Supabase broadcast
-  useEffect(() => {
-    if (!supabase) return;
-    const channel = supabase.channel('bizora-state');
-    channelRef.current = channel;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    channel.on('broadcast', { event: 'state-update' }, (payload: any) => {
-      const newState = payload?.payload?.state;
-      if (newState) {
-        isRemoteRef.current = true;
-        setState(newState);
-      }
-    });
-    channel.subscribe();
-    return () => {
-      supabase?.removeChannel(channel);
-      channelRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!supabase || !channelRef.current) return;
-    if (isFirstRef.current) {
-      isFirstRef.current = false;
-      return;
-    }
-    if (isRemoteRef.current) {
-      isRemoteRef.current = false;
-      return;
-    }
-    channelRef.current.send('broadcast', { event: 'state-update', payload: { state } });
   }, [state]);
 
   useEffect(() => {

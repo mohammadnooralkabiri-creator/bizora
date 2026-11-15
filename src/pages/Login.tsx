@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
+import { t } from '../i18n';
 
 interface LoginProps {
   onLogin: () => void;
@@ -8,6 +9,7 @@ interface LoginProps {
 export default function Login({ onLogin }: LoginProps) {
   const { state, login, addAccount } = useStore();
   const { accounts, settings } = state;
+  const lang = settings.language || 'ar';
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +34,7 @@ export default function Login({ onLogin }: LoginProps) {
     }
     const ok = login(username.trim(), password);
     if (ok) onLogin();
-    else setError('بيانات الدخول غير صحيحة (جرب jody / 67676767)');
+    else setError('بيانات الدخول غير صحيحة');
   };
 
   const discord = settings.discord || 'https://discord.gg/';
@@ -46,11 +48,11 @@ export default function Login({ onLogin }: LoginProps) {
           <p>منصة إدارة المشاريع الصغيرة</p>
         </div>
         <form onSubmit={submit} className="login-form">
-          <h2>{isSetup ? 'إعداد الحساب الأول (مالك)' : 'تسجيل الدخول'}</h2>
-          <label>اسم المستخدم</label>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jody" />
-          <label>كلمة المرور</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" />
+          <h2>{isSetup ? 'إعداد الحساب الأول (مالك)' : t(lang, 'login')}</h2>
+          <label>{t(lang, 'username')}</label>
+          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username" />
+          <label>{t(lang, 'password')}</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" />
           {error && <div className="login-error">{error}</div>}
           {info && <div className="login-hint">{info}</div>}
           <button type="submit" className="login-btn">
