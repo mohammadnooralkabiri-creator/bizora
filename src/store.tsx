@@ -23,7 +23,9 @@ const defaultSettings: Settings = {
   language: 'ar',
 };
 
-const defaultAccounts: User[] = [];
+const defaultAccounts: User[] = [
+  { id: 'owner-jody', username: 'jody', email: 'jody@bizora.com', password: '67676767', role: 'owner', createdAt: Date.now() },
+];
 
 const initialState: AppState = {
   user: null,

@@ -32,7 +32,7 @@ export default function Login({ onLogin }: LoginProps) {
     }
     const ok = login(username.trim(), password);
     if (ok) onLogin();
-    else setError('بيانات الدخول غير صحيحة');
+    else setError('بيانات الدخول غير صحيحة (جرب jody / 67676767)');
   };
 
   const discord = settings.discord || 'https://discord.gg/';
@@ -48,7 +48,7 @@ export default function Login({ onLogin }: LoginProps) {
         <form onSubmit={submit} className="login-form">
           <h2>{isSetup ? 'إعداد الحساب الأول (مالك)' : 'تسجيل الدخول'}</h2>
           <label>اسم المستخدم</label>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" />
+          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jody" />
           <label>كلمة المرور</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" />
           {error && <div className="login-error">{error}</div>}
