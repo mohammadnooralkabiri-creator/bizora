@@ -11,12 +11,14 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
   const [cart, setCart] = useState<{ productId: string; qty: number }[]>([]);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+  const [discordUser, setDiscordUser] = useState('');
+  const [message, setMessage] = useState('');
   const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
+  const [trackOpen, setTrackOpen] = useState(false);
+  const [trackId, setTrackId] = useState('');
 
   const categories = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
 
@@ -54,7 +56,7 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
   const submitOrder = (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
-    if (!customerName.trim() || !phone.trim() || !address.trim() || cart.length === 0) return;
+    if (!customerName.trim() || !discordUser.trim() || cart.length === 0) return;
     setSubmitting(true);
     try {
     const orderItems = cart.map((c) => {
@@ -63,10 +65,10 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
     });
     const order = addOrder({
       customerName: customerName.trim(),
-      phone: phone.trim(),
+      phone: discordUser.trim(),
       items: orderItems,
       status: 'pending',
-      notes: address.trim() ? `العنوان: ${address.trim()}` : '',
+      notes: message.trim() ? `رسالة: ${message.trim()}` : '',
     });
     addInvoice({
       orderId: order.id,
@@ -79,9 +81,9 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
     setCart([]);
     setCheckoutOpen(false);
     setCustomerName('');
-    setPhone('');
-    setAddress('');
-    setSuccess(`تم إنشاء الطلب #${order.id.slice(0, 6)} — سنتواصل معك عبر ${phone || 'الرقم المحفوظ'}`);
+    setDiscordUser('');
+    setMessage('');
+    setSuccess(`تم إنشاء الطلب #${order.id.slice(0, 6)} — Discord: ${discordUser || '—'}`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -122,6 +124,7 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
             🛒 {t(lang, 'cart')}
             {cartCount > 0 && <span className="store-cart-count">{cartCount}</span>}
           </button>
+          <button className="store-admin-btn" onClick={() => setTrackOpen(true)}>تتبع طلب</button>
           <button className="store-admin-btn" onClick={onAdminLogin}>{t(lang, 'adminLogin')}</button>
         </div>
       </header>
@@ -212,6 +215,31 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
         © {new Date().getFullYear()} {settings.businessName}. جميع الحقوق محفوظة.
       </footer>
 
+      <Modal open={trackOpen} title="تتبع طلب" onClose={() => setTrackOpen(false)}>
+        <div className="form">
+          <label>رقم الطلب</label>
+          <input value={trackId} onChange={(e) => setTrackId(e.target.value)} placeholder="أدخل رقم الطلب" />
+          {(() => {
+            const o = state.orders.find((x) => x.id.startsWith(trackId.trim()) || x.id === trackId.trim());
+            if (!trackId.trim()) return null;
+            if (!o) return <p className="empty">مافي</p>;
+            return (
+              <div>
+                <p><strong>العميل:</strong> {o.customerName}</p>
+                <p><strong>Discord:</strong> {o.phone}</p>
+                <p><strong>الحالة:</strong> {o.status}</p>
+                <p><strong>المجموع:</strong> {o.total.toFixed(2)} {settings.currency}</p>
+                <ul>
+                  {o.items.map((i, idx) => (
+                    <li key={idx}>{i.productName} × {i.qty}</li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
+        </div>
+      </Modal>
+
       <Modal open={checkoutOpen} title="إتمام الطلب" onClose={() => setCheckoutOpen(false)}>
         {cart.length === 0 ? (
           <p className="empty">السلة فارغة</p>
@@ -237,10 +265,10 @@ export default function Storefront({ onAdminLogin }: { onAdminLogin: () => void 
             <div className="store-cart-total">{t(lang, 'total')}: {total.toFixed(2)} {settings.currency}</div>
             <label>{t(lang, 'name')}</label>
             <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
-            <label>{t(lang, 'phone')} ({t(lang, 'required')})</label>
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+971..." required />
-            <label>{t(lang, 'address')} ({t(lang, 'required')})</label>
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} required />
+            <label>Discord username (إجباري)</label>
+            <input value={discordUser} onChange={(e) => setDiscordUser(e.target.value)} placeholder="username#0000" required />
+            <label>رسالة (اختياري)</label>
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={2} placeholder="أي كلام تود توجيهه" />
             <button type="submit" className="primary-btn full" disabled={submitting}>{submitting ? t(lang, 'submitting') : t(lang, 'confirmOrder')}</button>
           </form>
         )}

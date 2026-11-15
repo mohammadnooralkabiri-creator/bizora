@@ -3,6 +3,15 @@ import { useStore } from '../store';
 
 export default function Settings() {
   const { state, updateSettings, clearAll, seedDemo } = useStore();
+  const exportData = () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bizora-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   const { settings } = state;
   const [form, setForm] = useState({ ...settings });
 
@@ -64,6 +73,7 @@ export default function Settings() {
         <h3>بيانات</h3>
         <div className="header-actions">
           <button className="secondary-btn" onClick={seedDemo}>تحميل بيانات تجريبية</button>
+          <button className="secondary-btn" onClick={exportData}>تصدير نسخة احتياطية</button>
           <button className="danger-btn" onClick={() => { if (confirm('حذف جميع البيانات؟')) clearAll(); }}>حذف جميع البيانات</button>
         </div>
       </div>
