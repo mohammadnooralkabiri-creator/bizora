@@ -913,7 +913,9 @@ html.dark .card, html.dark .modal, html.dark .product-card, html.dark .store-pro
 html.dark .topbar, html.dark .store-header, html.dark .store-footer, html.dark .store-contacts, html.dark .modal-header, html.dark .login-brand { background: #111827; border-color: #1F2937; }
 html.dark input, html.dark select, html.dark textarea { background: #0F172A; color: #E2E8F0; border-color: #334155; }
 html.dark .search-input { background: #0F172A; color: #E2E8F0; }
-html.dark .muted, html.dark .store-product-cat, html.dark footer, html.dark .login-hint { color: #94A3B8; }
+html.dark .muted, html.dark .store-product-cat, html.dark footer, html.dark .login-hint, html.dark .empty { color: #94A3B8; }
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark strong, html.dark .breadcrumb, html.dark .topbar { color: #F9FAFB; }
+html.dark .page-header p { color: #94A3B8; }
 html.dark .store-hero { background: linear-gradient(135deg, #1E3A8A 0%, #111827 100%); }
 html.dark .store-hero h2 { color: #F9FAFB; }
 html.dark .store-hero p { color: #CBD5E1; }
